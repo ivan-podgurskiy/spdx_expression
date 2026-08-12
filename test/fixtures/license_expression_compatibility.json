@@ -3,7 +3,8 @@
   "spdx_license_list_version": "3.28.0",
   "sources": {
     "pep_639": "https://peps.python.org/pep-0639/#spdx-license-expression-syntax",
-    "packaging_26_0_fixtures": "https://github.com/pypa/packaging/blob/26.0/tests/test_metadata.py"
+    "packaging_26_0_fixtures": "https://github.com/pypa/packaging/blob/26.0/tests/test_metadata.py",
+    "project_profile": "COMPATIBILITY.md"
   },
   "packaging_26_0": {
     "version": "26.0",

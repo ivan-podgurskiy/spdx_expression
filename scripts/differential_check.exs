@@ -21,7 +21,6 @@ defmodule SpdxExpression.DifferentialCheck do
 
   try:
       import packaging
-      from packaging.licenses import canonicalize_license_expression
   except ModuleNotFoundError:
       print(json.dumps({"status": "skip", "reason": "packaging is not installed"}))
       sys.exit(0)
@@ -34,6 +33,8 @@ defmodule SpdxExpression.DifferentialCheck do
           "required": required_version,
       }))
       sys.exit(0)
+
+  from packaging.licenses import canonicalize_license_expression
 
   inputs = json.loads(base64.b64decode(sys.argv[2]).decode("utf-8"))
   outcomes = []
