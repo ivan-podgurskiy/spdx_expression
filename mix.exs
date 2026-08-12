@@ -36,7 +36,7 @@ defmodule SpdxExpression.MixProject do
 
   defp package do
     [
-      files: ~w(lib .formatter.exs mix.exs README.md LICENSE CHANGELOG.md),
+      files: ~w(lib .formatter.exs mix.exs README.md LICENSE CHANGELOG.md SPDX_DATA.md),
       licenses: ["MIT"],
       links: %{
         "GitHub" => @source_url,
@@ -52,7 +52,7 @@ defmodule SpdxExpression.MixProject do
       main: "SpdxExpression",
       source_ref: "v#{@version}",
       source_url: @source_url,
-      extras: ["README.md", "CHANGELOG.md", "LICENSE"]
+      extras: ["README.md", "CHANGELOG.md", "LICENSE", "SPDX_DATA.md"]
     ]
   end
 end
