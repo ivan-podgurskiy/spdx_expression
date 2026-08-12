@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   exact registry spelling, arbitrary binaries, and dynamic-atom safety.
 - Exact hostile-input boundary coverage and a reproducible dev-only
   one-million-input fuzz runner.
+- A dependency-free representative canonicalization benchmark with an
+  explicitly invoked 100-microsecond regression guard.
 
 ### Compatibility
 
