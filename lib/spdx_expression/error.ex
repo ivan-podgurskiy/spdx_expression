@@ -25,7 +25,7 @@ defmodule SpdxExpression.Error do
   @type t :: %__MODULE__{
           kind: kind(),
           message: String.t(),
-          token: String.t() | nil,
+          token: binary() | nil,
           offset: non_neg_integer() | nil,
           suggestion: String.t() | nil
         }
