@@ -113,7 +113,7 @@ defmodule SpdxExpression.Parser do
 
   defp parse_primary([%Token{kind: :identifier} = token | rest], _input_size, _depth) do
     case Registry.resolve_license(token.text, token.offset) do
-      {:ok, canonical} -> apply_plus(canonical, rest)
+      {:ok, canonical} -> apply_plus(canonical, token, rest)
       {:error, error} -> {:error, error}
     end
   end
@@ -147,15 +147,17 @@ defmodule SpdxExpression.Parser do
   defp parse_primary([token | _rest], _input_size, _depth),
     do: {:error, error(:unexpected_token, token)}
 
-  defp apply_plus(canonical, [%Token{kind: :plus} = token | rest]) do
-    if String.starts_with?(canonical, "LicenseRef-") do
-      {:error, error(:invalid_plus_suffix, token)}
+  defp apply_plus(canonical, identifier, [%Token{kind: :plus} = plus | rest]) do
+    adjacent? = plus.offset == identifier.offset + byte_size(identifier.text)
+
+    if String.starts_with?(canonical, "LicenseRef-") or not adjacent? do
+      {:error, error(:invalid_plus_suffix, plus)}
     else
       {:ok, {:license, canonical <> "+"}, rest}
     end
   end
 
-  defp apply_plus(canonical, rest), do: {:ok, {:license, canonical}, rest}
+  defp apply_plus(canonical, _identifier, rest), do: {:ok, {:license, canonical}, rest}
 
   defp trailing_error(%Token{kind: :rparen} = token),
     do: error(:unbalanced_parenthesis, token)

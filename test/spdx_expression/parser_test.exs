@@ -75,6 +75,7 @@ defmodule SpdxExpression.ParserTest do
   test "rejects misplaced and repeated plus suffixes" do
     assert_error("LicenseRef-Acme+", :invalid_plus_suffix, 15)
     assert_error("+MIT", :invalid_plus_suffix, 0)
+    assert_error("MIT +", :invalid_plus_suffix, 4)
     assert_error("MIT++", :invalid_plus_suffix, 4)
     assert_error("(MIT)+", :invalid_plus_suffix, 5)
     assert_error("MIT WITH Classpath-exception-2.0+", :invalid_plus_suffix, 32)
