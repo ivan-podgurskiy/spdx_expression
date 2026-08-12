@@ -87,6 +87,15 @@ defmodule SpdxExpression.CompatibilityTest do
     end
   end
 
+  test "keeps the pinned Python oracle in an explicitly invoked development script" do
+    script = File.read!("scripts/differential_check.exs")
+    workflow = File.read!(".github/workflows/ci.yml")
+
+    assert script =~ ~s(@packaging_version "26.0")
+    assert script =~ @fixture_path
+    refute workflow =~ "differential_check"
+  end
+
   defp assert_difference(cases, label) do
     difference_cases = Enum.filter(cases, &(&1["difference"] == label))
 
