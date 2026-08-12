@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Explicit size and parenthesis-depth limits for untrusted input.
 - A committed 72-case PEP 639 and `packaging==26.0` compatibility corpus plus
   an optional pinned differential-check script.
+- Deterministic property tests for canonicalization, private AST round trips,
+  exact registry spelling, arbitrary binaries, and dynamic-atom safety.
+- Exact hostile-input boundary coverage and a reproducible dev-only
+  one-million-input fuzz runner.
 
 ### Compatibility
 

@@ -132,6 +132,23 @@ To refresh committed outcomes after an intentional behavior or oracle change,
 run `mix run scripts/differential_check.exs --update`, review the diff, and run
 the full test suite. The script is not part of ordinary CI or the Hex package.
 
+Run the reproducible hostile-input campaign explicitly before a release:
+
+```bash
+MIX_ENV=dev mix run scripts/fuzz.exs --runs 1000000 --seed 101,202,303
+```
+
+The runner mixes arbitrary binaries, grammar-shaped token streams, mutations
+of valid expressions, and exact boundary cases. It checks both non-bang APIs,
+canonicalization idempotence, result shapes, caught exits/errors/throws, and
+atom-table stability. A failure prints the iteration, base64 input, and replay
+budget. It is intentionally excluded from ordinary CI and the Hex package.
+
+Recorded baseline on 2026-08-12: 1,000,000 inputs completed in 7,764 ms with
+zero crashes, invariant failures, or new atoms on Darwin 25.6.0 arm64, OTP 27,
+and Elixir 1.18.3 using seed `101,202,303`. Timing is informational; the zero
+failure and zero-atom results are the release gates.
+
 See [SPDX_DATA.md](SPDX_DATA.md) for upstream URLs, checksums, counts, and
 attribution. Ordinary API calls perform no network or filesystem I/O.
 
