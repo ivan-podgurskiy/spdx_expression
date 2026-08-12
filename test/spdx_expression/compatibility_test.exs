@@ -93,6 +93,7 @@ defmodule SpdxExpression.CompatibilityTest do
 
     assert script =~ ~s(@packaging_version "26.0")
     assert script =~ @fixture_path
+    assert script =~ ~s("--update")
     refute workflow =~ "differential_check"
   end
 

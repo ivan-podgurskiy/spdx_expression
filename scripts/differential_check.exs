@@ -4,6 +4,7 @@
 #
 #   python3 -m pip install "packaging==26.0"
 #   mix run scripts/differential_check.exs
+#   mix run scripts/differential_check.exs --update
 #
 # This is dev-only and intentionally not wired into CI or the Hex package.
 
@@ -50,9 +51,9 @@ defmodule SpdxExpression.DifferentialCheck do
   def run do
     with python when is_binary(python) <- System.find_executable("python3"),
          {:ok, corpus} <- read_corpus(),
-         :ok <- verify_python(python, corpus),
-         :ok <- verify_project(corpus) do
-      report_success(corpus)
+         {:ok, python_outcomes} <- query_python(python, corpus) do
+      project_outcomes = Enum.map(corpus["cases"], &project_outcome/1)
+      handle_mode(System.argv(), corpus, python_outcomes, project_outcomes)
     else
       nil ->
         skip("python3 is not installed")
@@ -74,7 +75,7 @@ defmodule SpdxExpression.DifferentialCheck do
     end
   end
 
-  defp verify_python(python, %{"cases" => cases}) do
+  defp query_python(python, %{"cases" => cases}) do
     inputs = Enum.map(cases, &Map.fetch!(&1, "input"))
     encoded_inputs = inputs |> Jason.encode!() |> Base.encode64()
 
@@ -95,7 +96,12 @@ defmodule SpdxExpression.DifferentialCheck do
            ~s(Install it with: python3 -m pip install "packaging==26.0")}
 
       {:ok, %{"status" => "ok", "outcomes" => outcomes}} ->
-        compare_outcomes(cases, outcomes, "packaging_26_0")
+        if length(cases) == length(outcomes) do
+          {:ok, outcomes}
+        else
+          {:error,
+           "packaging_26_0 returned #{length(outcomes)} outcomes for #{length(cases)} corpus cases"}
+        end
 
       {:ok, result} ->
         {:error, "unexpected Python oracle response: #{inspect(result)}"}
@@ -103,11 +109,6 @@ defmodule SpdxExpression.DifferentialCheck do
       {:error, reason} ->
         {:error, "invalid Python oracle response: #{inspect(reason)}; output: #{output}"}
     end
-  end
-
-  defp verify_project(%{"cases" => cases}) do
-    outcomes = Enum.map(cases, &project_outcome/1)
-    compare_outcomes(cases, outcomes, "project")
   end
 
   defp project_outcome(%{"input" => input}) do
@@ -118,6 +119,42 @@ defmodule SpdxExpression.DifferentialCheck do
       {:error, error} ->
         %{"status" => "error", "kind" => Atom.to_string(error.kind)}
     end
+  end
+
+  defp handle_mode([], %{"cases" => cases} = corpus, python_outcomes, project_outcomes) do
+    with :ok <- compare_outcomes(cases, python_outcomes, "packaging_26_0"),
+         :ok <- compare_outcomes(cases, project_outcomes, "project") do
+      report_success(corpus)
+    else
+      {:error, message} -> fail(message)
+    end
+  end
+
+  defp handle_mode(["--update"], corpus, python_outcomes, project_outcomes) do
+    updated_cases =
+      corpus["cases"]
+      |> Enum.zip(python_outcomes)
+      |> Enum.zip(project_outcomes)
+      |> Enum.map(fn {{fixture, python_outcome}, project_outcome} ->
+        fixture
+        |> Map.put("packaging_26_0", python_outcome)
+        |> Map.put("project", project_outcome)
+      end)
+
+    updated_corpus = Map.put(corpus, "cases", updated_cases)
+    contents = Jason.encode!(updated_corpus, pretty: true) <> "\n"
+
+    case File.write(@fixture_path, contents) do
+      :ok ->
+        IO.puts("Updated #{@fixture_path}; review the diff and run mix test.")
+
+      {:error, reason} ->
+        fail("cannot write compatibility corpus: #{inspect(reason)}")
+    end
+  end
+
+  defp handle_mode(arguments, _corpus, _python_outcomes, _project_outcomes) do
+    fail("unexpected arguments #{inspect(arguments)}; use no arguments or --update")
   end
 
   defp compare_outcomes(cases, outcomes, expected_key) when length(cases) == length(outcomes) do
