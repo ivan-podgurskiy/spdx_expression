@@ -47,6 +47,14 @@ jobs:
         run: mix format --check-formatted
 
       - if: matrix.quality
+        run: mix run scripts/generate_spdx_data.exs
+        env:
+          MIX_ENV: dev
+
+      - if: matrix.quality
+        run: git diff --exit-code -- lib/spdx_expression/data.ex
+
+      - if: matrix.quality
         run: mix credo --strict
 
       - if: matrix.quality

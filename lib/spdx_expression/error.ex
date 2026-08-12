@@ -5,6 +5,7 @@ defmodule SpdxExpression.Error do
   Offsets are zero-based byte offsets into the original input.
   """
 
+  @typedoc "Stable category for an SPDX expression validation failure."
   @type kind ::
           :invalid_type
           | :empty_expression
@@ -22,6 +23,7 @@ defmodule SpdxExpression.Error do
           | :expression_too_long
           | :expression_too_deep
 
+  @typedoc "A structured validation failure with its original token and byte offset."
   @type t :: %__MODULE__{
           kind: kind(),
           message: String.t(),

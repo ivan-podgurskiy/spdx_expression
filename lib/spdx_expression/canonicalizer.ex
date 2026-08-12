@@ -4,12 +4,14 @@ defmodule SpdxExpression.Canonicalizer do
   alias SpdxExpression.Parser
 
   @spec render(Parser.ast()) :: String.t()
-  def render({:license, identifier}), do: identifier
-  def render({:group, expression}), do: "(" <> render(expression) <> ")"
+  def render(expression), do: expression |> to_iodata() |> IO.iodata_to_binary()
 
-  def render({:with, license, exception}),
-    do: render(license) <> " WITH " <> exception
+  defp to_iodata({:license, identifier}), do: identifier
+  defp to_iodata({:group, expression}), do: ["(", to_iodata(expression), ")"]
 
-  def render({:and, left, right}), do: render(left) <> " AND " <> render(right)
-  def render({:or, left, right}), do: render(left) <> " OR " <> render(right)
+  defp to_iodata({:with, license, exception}),
+    do: [to_iodata(license), " WITH ", exception]
+
+  defp to_iodata({:and, left, right}), do: [to_iodata(left), " AND ", to_iodata(right)]
+  defp to_iodata({:or, left, right}), do: [to_iodata(left), " OR ", to_iodata(right)]
 end
