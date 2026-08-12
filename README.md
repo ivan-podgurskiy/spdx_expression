@@ -1,6 +1,8 @@
 # Spdx Expression
 
 [![CI](https://github.com/ivan-podgurskiy/spdx_expression/actions/workflows/ci.yml/badge.svg)](https://github.com/ivan-podgurskiy/spdx_expression/actions/workflows/ci.yml)
+[![Hex.pm](https://img.shields.io/hexpm/v/spdx_expression.svg)](https://hex.pm/packages/spdx_expression)
+[![HexDocs](https://img.shields.io/badge/hex-docs-blue.svg)](https://hexdocs.pm/spdx_expression)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Validate and canonicalize PEP 639-compatible SPDX license expressions in
@@ -14,8 +16,7 @@ pinned SPDX License List and performs no runtime network or filesystem access.
 
 ## Installation
 
-Add `spdx_expression` to the dependencies in `mix.exs` after `0.1.0` is
-published:
+Add `spdx_expression` to the dependencies in `mix.exs`:
 
 ```elixir
 def deps do
