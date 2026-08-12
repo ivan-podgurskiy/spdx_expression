@@ -83,13 +83,13 @@ defmodule SpdxExpression.Fuzz do
 
   defp run_campaign(runs, seed) do
     warmup_seed = :rand.seed_s(:exsss, {11, 22, 33})
-    {_warmup_state, _warmup_counts} = execute(100, warmup_seed, false)
+    {_warmup_state, _warmup_counts} = execute(100, warmup_seed, false, nil)
     :erlang.garbage_collect()
 
     atom_count_before = :erlang.system_info(:atom_count)
     state = :rand.seed_s(:exsss, seed)
     started_at = System.monotonic_time()
-    {_state, counts} = execute(runs, state, true)
+    {_state, counts} = execute(runs, state, true, seed)
     elapsed_ms = elapsed_milliseconds(started_at)
 
     :erlang.garbage_collect()
@@ -106,28 +106,29 @@ defmodule SpdxExpression.Fuzz do
     end
   end
 
-  defp execute(runs, state, halt_on_failure?) do
+  defp execute(runs, state, halt_on_failure?, replay_seed) do
     counts = %{arbitrary: 0, grammar: 0, mutated: 0, boundary: 0}
-    execute(1, runs, state, counts, halt_on_failure?)
+    execute(1, runs, state, counts, halt_on_failure?, replay_seed)
   end
 
-  defp execute(iteration, runs, state, counts, _halt_on_failure?) when iteration > runs,
-    do: {state, counts}
+  defp execute(iteration, runs, state, counts, _halt_on_failure?, _replay_seed)
+       when iteration > runs,
+       do: {state, counts}
 
-  defp execute(iteration, runs, state, counts, halt_on_failure?) do
+  defp execute(iteration, runs, state, counts, halt_on_failure?, replay_seed) do
     class = input_class(iteration)
     {input, next_state} = generate_input(class, iteration, state)
     next_counts = Map.update!(counts, class, &(&1 + 1))
 
     case verify_input(input) do
       :ok ->
-        execute(iteration + 1, runs, next_state, next_counts, halt_on_failure?)
+        execute(iteration + 1, runs, next_state, next_counts, halt_on_failure?, replay_seed)
 
       {:error, reason} when halt_on_failure? ->
-        fuzz_failure(iteration, class, input, reason)
+        fuzz_failure(iteration, class, input, reason, replay_seed)
 
       {:error, _reason} ->
-        execute(iteration + 1, runs, next_state, next_counts, halt_on_failure?)
+        execute(iteration + 1, runs, next_state, next_counts, halt_on_failure?, replay_seed)
     end
   end
 
@@ -278,14 +279,18 @@ defmodule SpdxExpression.Fuzz do
       "mutated=#{counts.mutated},boundary=#{counts.boundary}"
   end
 
-  defp fuzz_failure(iteration, class, input, reason) do
+  defp fuzz_failure(iteration, class, input, reason, replay_seed) do
     IO.puts(
       :stderr,
       "Fuzz failed: iteration=#{iteration} class=#{class} reason=#{inspect(reason)}"
     )
 
     IO.puts(:stderr, "input_base64=#{Base.encode64(input)}")
-    fail("replay with the same --seed and --runs #{iteration}")
+
+    fail(
+      "replay: MIX_ENV=dev mix run scripts/fuzz.exs --runs #{iteration} " <>
+        "--seed #{seed_string(replay_seed)}"
+    )
   end
 
   defp fail(message) do

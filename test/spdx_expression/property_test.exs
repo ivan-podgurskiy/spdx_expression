@@ -34,6 +34,7 @@ defmodule SpdxExpression.PropertyTest do
 
       assert {:ok, rendered_tokens} = Tokenizer.tokenize(rendered)
       assert {:ok, reparsed_ast} = Parser.parse(rendered_tokens, byte_size(rendered))
+      assert reparsed_ast == ast
       assert Canonicalizer.render(reparsed_ast) == rendered
     end
   end
