@@ -1,5 +1,5 @@
 defmodule SpdxExpression.PropertyTest do
-  use ExUnit.Case, async: true
+  use ExUnit.Case, async: false
   use ExUnitProperties
 
   alias SpdxExpression.Test.ExpressionGenerator
@@ -74,6 +74,15 @@ defmodule SpdxExpression.PropertyTest do
     SpdxExpression.canonicalize("MIT")
     SpdxExpression.canonicalize(<<0xFF>>)
     SpdxExpression.valid?("MIT")
+
+    check all(
+            _warmup <- StreamData.binary(max_length: 1),
+            max_runs: 1,
+            initial_seed: 20_260_816
+          ) do
+      :ok
+    end
+
     :erlang.garbage_collect()
     atom_count_before = :erlang.system_info(:atom_count)
 
