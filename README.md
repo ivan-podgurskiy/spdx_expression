@@ -82,7 +82,16 @@ SpdxExpression.license_list_version()
 
 Python is not required to install, test normally, or run this library. A
 pinned Python `packaging` release is used only by an optional development
-compatibility check.
+compatibility check. See [COMPATIBILITY.md](COMPATIBILITY.md) for the committed
+PEP 639 corpus and every intentional oracle difference.
+
+## Positioning
+
+Unlike a single-identifier lookup helper, `SpdxExpression` parses complete
+expressions with precedence, grouping, exceptions, and custom `LicenseRef-*`
+identifiers. Unlike a full SBOM toolkit, it stays focused on expression
+validation and canonicalization; it does not model documents, dependency
+graphs, legal compatibility, or organizational policy.
 
 ## API
 
@@ -110,6 +119,18 @@ Regenerate the embedded identifier registry with:
 mix run scripts/generate_spdx_data.exs
 git diff --exit-code -- lib/spdx_expression/data.ex
 ```
+
+Run the optional compatibility oracle with an isolated Python environment that
+contains the exact pinned release:
+
+```bash
+python3 -m pip install "packaging==26.0"
+mix run scripts/differential_check.exs
+```
+
+To refresh committed outcomes after an intentional behavior or oracle change,
+run `mix run scripts/differential_check.exs --update`, review the diff, and run
+the full test suite. The script is not part of ordinary CI or the Hex package.
 
 See [SPDX_DATA.md](SPDX_DATA.md) for upstream URLs, checksums, counts, and
 attribution. Ordinary API calls perform no network or filesystem I/O.
