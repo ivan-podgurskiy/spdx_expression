@@ -67,8 +67,9 @@ defmodule SpdxExpression.Test.ExpressionGenerator do
   end
 
   defp with_exception do
-    bind(one_of([spdx_license(), license_ref(), plus_license()]), fn license ->
-      bind(member_of(@active_exceptions), fn exception ->
+    bind(
+      {one_of([spdx_license(), license_ref(), plus_license()]), member_of(@active_exceptions)},
+      fn {license, exception} ->
         map(
           {constant(license), cased_identifier(exception), whitespace(), operator("WITH"),
            whitespace()},
@@ -80,8 +81,8 @@ defmodule SpdxExpression.Test.ExpressionGenerator do
             }
           end
         )
-      end)
-    end)
+      end
+    )
   end
 
   defp grouped(child) do
