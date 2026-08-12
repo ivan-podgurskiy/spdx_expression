@@ -132,6 +132,12 @@ To refresh committed outcomes after an intentional behavior or oracle change,
 run `mix run scripts/differential_check.exs --update`, review the diff, and run
 the full test suite. The script is not part of ordinary CI or the Hex package.
 
+Continuous integration compiles and runs the complete ordinary test suite on
+Ubuntu with Elixir 1.14/OTP 25 and Elixir 1.18/OTP 27, plus macOS and Windows
+with Elixir 1.18/OTP 27. The latest Ubuntu lane additionally enforces
+formatting, warnings-as-errors, reproducible SPDX generation, strict Credo,
+Dialyzer, warning-free ExDoc, and Hex artifact construction.
+
 Run the reproducible hostile-input campaign explicitly before a release:
 
 ```bash

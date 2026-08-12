@@ -2,8 +2,10 @@ defmodule SpdxExpression do
   @moduledoc """
   Validates and canonicalizes PEP 639-compatible SPDX license expressions.
 
-  This module validates syntax and identifiers. It does not determine legal
-  compatibility or organizational license policy.
+  The parser embeds SPDX License List 3.28.0, rejects deprecated identifiers,
+  and limits input to 65,536 bytes and 128 parenthesis levels. It validates
+  syntax and identifiers; it does not determine legal compatibility or
+  organizational license policy.
   """
 
   alias SpdxExpression.Canonicalizer

@@ -27,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   one-million-input fuzz runner.
 - A dependency-free representative canonicalization benchmark with an
   explicitly invoked 100-microsecond regression guard.
+- Continuous integration across Linux, macOS, and Windows, including the
+  Elixir 1.14/OTP 25 compatibility floor and an Elixir 1.18/OTP 27 quality
+  lane for formatting, warnings, SPDX regeneration, Credo, Dialyzer, ExDoc,
+  and Hex artifact checks.
 
 ### Compatibility
 
