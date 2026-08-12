@@ -1,0 +1,11 @@
+/_build/
+/cover/
+/deps/
+/doc/
+/docs/superpowers/
+/priv/plts/*.plt
+/priv/plts/*.plt.hash
+/tmp/
+erl_crash.dump
+*.ez
+spdx_expression-*.tar
