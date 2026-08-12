@@ -80,10 +80,8 @@ SpdxExpression.license_list_version()
 #=> "3.28.0"
 ```
 
-Python is not required to install, test normally, or run this library. A
-pinned Python `packaging` release is used only by an optional development
-compatibility check. See [COMPATIBILITY.md](COMPATIBILITY.md) for the committed
-PEP 639 corpus and every intentional oracle difference.
+See [COMPATIBILITY.md](COMPATIBILITY.md) for the committed PEP 639 corpus and
+every intentional oracle difference.
 
 ## Positioning
 
@@ -99,74 +97,6 @@ graphs, legal compatibility, or organizational policy.
 - `canonicalize!/1` returns the canonical expression or raises that error.
 - `valid?/1` returns a boolean for any Elixir term.
 - `license_list_version/0` reports the embedded SPDX data version.
-
-## Development
-
-```bash
-mix deps.get
-mix format --check-formatted
-mix compile --warnings-as-errors
-mix test
-mix credo --strict
-mix dialyzer --format github
-mix docs
-mix hex.build
-```
-
-Regenerate the embedded identifier registry with:
-
-```bash
-mix run scripts/generate_spdx_data.exs
-git diff --exit-code -- lib/spdx_expression/data.ex
-```
-
-Run the optional compatibility oracle with an isolated Python environment that
-contains the exact pinned release:
-
-```bash
-python3 -m pip install "packaging==26.0"
-mix run scripts/differential_check.exs
-```
-
-To refresh committed outcomes after an intentional behavior or oracle change,
-run `mix run scripts/differential_check.exs --update`, review the diff, and run
-the full test suite. The script is not part of ordinary CI or the Hex package.
-
-Continuous integration compiles and runs the complete ordinary test suite on
-Ubuntu with Elixir 1.14/OTP 25 and Elixir 1.18/OTP 27, plus macOS and Windows
-with Elixir 1.18/OTP 27. The latest Ubuntu lane additionally enforces
-formatting, warnings-as-errors, reproducible SPDX generation, strict Credo,
-Dialyzer, warning-free ExDoc, and Hex artifact construction.
-
-Run the reproducible hostile-input campaign explicitly before a release:
-
-```bash
-MIX_ENV=dev mix run scripts/fuzz.exs --runs 1000000 --seed 101,202,303
-```
-
-The runner mixes arbitrary binaries, grammar-shaped token streams, mutations
-of valid expressions, and exact boundary cases. It checks both non-bang APIs,
-canonicalization idempotence, result shapes, caught exits/errors/throws, and
-atom-table stability. A failure prints the iteration, base64 input, and replay
-budget. It is intentionally excluded from ordinary CI and the Hex package.
-
-Recorded baseline on 2026-08-12: 1,000,000 inputs completed in 7,764 ms with
-zero crashes, invariant failures, or new atoms on Darwin 25.6.0 arm64, OTP 27,
-and Elixir 1.18.3 using seed `101,202,303`. Timing is informational; the zero
-failure and zero-atom results are the release gates.
-
-Run the representative performance guard separately:
-
-```bash
-MIX_ENV=dev mix run scripts/benchmark.exs --iterations 200000 --max-us 100.0
-```
-
-The benchmark performs 10,000 warmup calls and measures 200,000 calls in 20
-batches. On the same 2026-08-12 environment, the expression
-`mit and (apache-2.0 or bsd-2-clause)` averaged 1.807 μs per call, with batch
-means from 1.756 μs to 1.871 μs. The 100 μs mean guard is deliberately generous
-across supported development machines; timing checks remain outside ordinary
-CI to avoid noisy shared-runner failures.
 
 See [SPDX_DATA.md](SPDX_DATA.md) for upstream URLs, checksums, counts, and
 attribution. Ordinary API calls perform no network or filesystem I/O.
