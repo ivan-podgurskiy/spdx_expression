@@ -6,17 +6,20 @@ defmodule SpdxExpression.Test.ExpressionGenerator do
   @licenses_path Path.expand("../../priv/spdx/3.28.0/licenses.json", __DIR__)
   @exceptions_path Path.expand("../../priv/spdx/3.28.0/exceptions.json", __DIR__)
 
-  @active_licenses @licenses_path
+  @license_entries @licenses_path
                    |> File.read!()
                    |> Jason.decode!()
                    |> Map.fetch!("licenses")
-                   |> Enum.reject(& &1["isDeprecatedLicenseId"])
-                   |> Enum.map(&Map.fetch!(&1, "licenseId"))
-
-  @active_exceptions @exceptions_path
+  @exception_entries @exceptions_path
                      |> File.read!()
                      |> Jason.decode!()
                      |> Map.fetch!("exceptions")
+
+  @active_licenses @license_entries
+                   |> Enum.reject(& &1["isDeprecatedLicenseId"])
+                   |> Enum.map(&Map.fetch!(&1, "licenseId"))
+
+  @active_exceptions @exception_entries
                      |> Enum.reject(& &1["isDeprecatedLicenseId"])
                      |> Enum.map(&Map.fetch!(&1, "licenseExceptionId"))
 
@@ -32,6 +35,12 @@ defmodule SpdxExpression.Test.ExpressionGenerator do
     end)
     |> resize(12)
   end
+
+  @spec license_entry() :: StreamData.t(map())
+  def license_entry, do: member_of(@license_entries)
+
+  @spec exception_entry() :: StreamData.t(map())
+  def exception_entry, do: member_of(@exception_entries)
 
   defp simple_expression do
     one_of([

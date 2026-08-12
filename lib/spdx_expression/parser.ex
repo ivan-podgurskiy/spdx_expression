@@ -165,16 +165,10 @@ defmodule SpdxExpression.Parser do
   defp trailing_error(%Token{kind: :plus} = token),
     do: error(:invalid_plus_suffix, token)
 
-  defp trailing_error(%Token{kind: :with} = token),
-    do: error(:invalid_with_operand, token)
-
   defp trailing_error(token), do: error(:unexpected_token, token)
 
   defp group_closing_error(%Token{kind: :plus} = token),
     do: error(:invalid_plus_suffix, token)
-
-  defp group_closing_error(%Token{kind: :with} = token),
-    do: error(:invalid_with_operand, token)
 
   defp group_closing_error(token), do: error(:unexpected_token, token)
 

@@ -81,6 +81,11 @@ defmodule SpdxExpression.ParserTest do
     assert_error("MIT WITH Classpath-exception-2.0+", :invalid_plus_suffix, 32)
   end
 
+  test "reports tokens that cannot close a parenthesized expression" do
+    assert_error("((MIT)+)", :invalid_plus_suffix, 6)
+    assert_error("(MIT Apache-2.0)", :unexpected_token, 5)
+  end
+
   test "reports an unknown plus-suffixed base as an unknown license" do
     assert_error("Unknown-License+", :unknown_license, 0)
   end
