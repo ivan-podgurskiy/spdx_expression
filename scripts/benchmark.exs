@@ -13,16 +13,16 @@ defmodule SpdxExpression.Benchmark do
 
   @representative "mit and (apache-2.0 or bsd-2-clause)"
   @expected {:ok, "MIT AND (Apache-2.0 OR BSD-2-Clause)"}
-  @default_warmup_iterations 10_000
+  @warmup_iterations 10_000
   @default_iterations 200_000
   @default_max_us 100.0
   @batch_count 20
-  @usage "Usage: mix run scripts/benchmark.exs [--iterations POSITIVE_INTEGER] [--warmup NON_NEGATIVE_INTEGER] [--max-us NON_NEGATIVE_FLOAT]"
+  @usage "Usage: mix run scripts/benchmark.exs [--iterations POSITIVE_INTEGER] [--max-us NON_NEGATIVE_FLOAT]"
 
   def run(arguments) do
     case parse_arguments(arguments) do
-      {:ok, iterations, warmup_iterations, max_us} ->
-        measure(iterations, warmup_iterations, max_us)
+      {:ok, iterations, max_us} ->
+        measure(iterations, max_us)
 
       {:error, message} ->
         fail("#{message}\n#{@usage}")
@@ -31,26 +31,22 @@ defmodule SpdxExpression.Benchmark do
 
   defp parse_arguments(arguments) do
     {options, positional, invalid} =
-      OptionParser.parse(arguments,
-        strict: [iterations: :integer, warmup: :integer, max_us: :float]
-      )
+      OptionParser.parse(arguments, strict: [iterations: :integer, max_us: :float])
 
     with [] <- positional,
          [] <- invalid,
          iterations when is_integer(iterations) and iterations > 0 <-
            Keyword.get(options, :iterations, @default_iterations),
-         warmup_iterations when is_integer(warmup_iterations) and warmup_iterations >= 0 <-
-           Keyword.get(options, :warmup, @default_warmup_iterations),
          max_us when is_float(max_us) and max_us >= 0.0 <-
            Keyword.get(options, :max_us, @default_max_us) do
-      {:ok, iterations, warmup_iterations, max_us}
+      {:ok, iterations, max_us}
     else
       _invalid -> {:error, "invalid benchmark arguments"}
     end
   end
 
-  defp measure(iterations, warmup_iterations, max_us) do
-    :ok = run_calls(warmup_iterations)
+  defp measure(iterations, max_us) do
+    :ok = run_calls(@warmup_iterations)
 
     batch_measurements =
       iterations
@@ -68,7 +64,7 @@ defmodule SpdxExpression.Benchmark do
 
     if mean_us <= max_us do
       IO.puts(
-        "Benchmark passed: iterations=#{iterations} warmup=#{warmup_iterations} " <>
+        "Benchmark passed: iterations=#{iterations} warmup=#{@warmup_iterations} " <>
           "mean_us=#{decimal(mean_us)} min_batch_us=#{decimal(min_batch_us)} " <>
           "max_batch_us=#{decimal(max_batch_us)} guard_us=#{decimal(max_us)}"
       )

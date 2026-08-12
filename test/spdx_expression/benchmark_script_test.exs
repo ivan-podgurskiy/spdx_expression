@@ -4,8 +4,7 @@ defmodule SpdxExpression.BenchmarkScriptTest do
   @script "scripts/benchmark.exs"
 
   test "reports a measured mean below the requested guard" do
-    {output, status} =
-      run_benchmark(["--iterations", "10000", "--warmup", "10", "--max-us", "100.0"])
+    {output, status} = run_benchmark(["--iterations", "10000", "--max-us", "100.0"])
 
     assert status == 0, output
     assert output =~ "Benchmark passed: iterations=10000"
@@ -14,8 +13,7 @@ defmodule SpdxExpression.BenchmarkScriptTest do
   end
 
   test "returns a non-zero exit when the measured mean exceeds the guard" do
-    {output, status} =
-      run_benchmark(["--iterations", "1000", "--warmup", "10", "--max-us", "0.0"])
+    {output, status} = run_benchmark(["--iterations", "1000", "--max-us", "0.0"])
 
     assert status != 0
     assert output =~ "Benchmark guard failed:"
@@ -25,7 +23,7 @@ defmodule SpdxExpression.BenchmarkScriptTest do
   defp run_benchmark(arguments) do
     System.cmd("mix", ["run", @script | arguments],
       cd: File.cwd!(),
-      env: [{"MIX_ENV", "dev"}],
+      env: [{"MIX_ENV", "test"}],
       stderr_to_stdout: true
     )
   end
