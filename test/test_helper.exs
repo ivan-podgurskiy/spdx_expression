@@ -1,3 +1,3 @@
 ExUnit.start()
 
-Code.require_file("support/expression_generator.ex", __DIR__)
+Code.require_file("support/expression_generator.exs", __DIR__)

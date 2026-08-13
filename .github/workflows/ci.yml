@@ -20,17 +20,29 @@ jobs:
             otp: "25"
           - platform: Ubuntu
             os: ubuntu-latest
+            elixir: "1.17"
+            otp: "26"
+          - platform: Ubuntu
+            os: ubuntu-latest
             elixir: "1.18"
             otp: "27"
+          - platform: Ubuntu
+            os: ubuntu-latest
+            elixir: "1.19"
+            otp: "28"
+          - platform: Ubuntu
+            os: ubuntu-latest
+            elixir: "1.20"
+            otp: "29"
             quality: true
           - platform: macOS
             os: macos-latest
-            elixir: "1.18"
-            otp: "27"
+            elixir: "1.20"
+            otp: "29"
           - platform: Windows
             os: windows-latest
-            elixir: "1.18"
-            otp: "27"
+            elixir: "1.20"
+            otp: "29"
     env:
       MIX_ENV: test
     steps:
@@ -53,7 +65,10 @@ jobs:
 
       - run: mix deps.get
       - run: mix compile --warnings-as-errors
-      - run: mix test
+      - run: mix test --warnings-as-errors
+
+      - if: matrix.quality
+        run: mix test --cover --warnings-as-errors
 
       - if: matrix.quality
         run: mix format --check-formatted

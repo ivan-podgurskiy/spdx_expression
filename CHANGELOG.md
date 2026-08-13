@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-08-13
+
 ### Added
 
 - `SpdxExpression.canonicalize/1` and `canonicalize!/1` for PEP 639-compatible
@@ -27,10 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   one-million-input fuzz runner.
 - A dependency-free representative canonicalization benchmark with an
   explicitly invoked 100-microsecond regression guard.
-- Continuous integration across Linux, macOS, and Windows, including the
-  Elixir 1.14/OTP 25 compatibility floor and an Elixir 1.18/OTP 27 quality
-  lane for formatting, warnings, SPDX regeneration, Credo, Dialyzer, ExDoc,
-  and Hex artifact checks.
+- Continuous integration across Linux, macOS, and Windows, including Linux
+  coverage for Elixir/OTP generations from 1.14/25 through 1.20/29 and an
+  Elixir 1.20/OTP 29 quality lane for core coverage, formatting, warnings,
+  SPDX regeneration, Credo, Dialyzer, ExDoc, and Hex artifact checks.
 
 ### Compatibility
 
@@ -47,3 +49,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   type boundaries are enforced outside the differential corpus.
 
 [Unreleased]: https://github.com/ivan-podgurskiy/spdx_expression/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/ivan-podgurskiy/spdx_expression/releases/tag/v0.1.0

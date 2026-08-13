@@ -16,6 +16,16 @@ defmodule SpdxExpression.MixProject do
       package: package(),
       source_url: @source_url,
       docs: docs(),
+      test_ignore_filters: [&String.starts_with?(&1, "test/support/")],
+      test_coverage: [
+        summary: [threshold: 100],
+        ignore_modules: [
+          SpdxExpression,
+          SpdxExpression.Data,
+          SpdxExpression.Error,
+          SpdxExpression.Token
+        ]
+      ],
       dialyzer: [
         plt_add_apps: [:ex_unit, :mix],
         plt_local_path: "priv/plts/local.plt",
