@@ -15,7 +15,7 @@ jobs:
       matrix:
         include:
           - platform: Ubuntu
-            os: ubuntu-latest
+            os: ubuntu-24.04
             elixir: "1.14"
             otp: "25"
           - platform: Ubuntu
@@ -59,9 +59,9 @@ jobs:
             deps
             _build
             priv/plts
-          key: ${{ runner.os }}-otp${{ matrix.otp }}-elixir${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
+          key: ${{ matrix.os }}-otp${{ matrix.otp }}-elixir${{ matrix.elixir }}-${{ hashFiles('**/mix.lock') }}
           restore-keys: |
-            ${{ runner.os }}-otp${{ matrix.otp }}-elixir${{ matrix.elixir }}-
+            ${{ matrix.os }}-otp${{ matrix.otp }}-elixir${{ matrix.elixir }}-
 
       - run: mix deps.get
       - run: mix compile --warnings-as-errors
